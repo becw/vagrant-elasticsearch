@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 apt-get -yq update
-apt-get -yq install git curl openjdk-7-jre-headless service-wrapper
+apt-get -yq install git openjdk-7-jre-headless service-wrapper
 
 # Install ElasticSearch
 wget -nv https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.20.6.tar.gz
