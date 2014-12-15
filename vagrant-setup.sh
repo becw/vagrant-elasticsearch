@@ -1,25 +1,23 @@
 #!/usr/bin/env bash
 
 apt-get -yq update
-apt-get -yq install git openjdk-7-jre-headless service-wrapper
+apt-get -yq install git openjdk-7-jre-headless service-wrapper curl
 
-# Install ElasticSearch
-wget -nv https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.20.6.tar.gz
-tar -xzf elasticsearch-0.20.6.tar.gz
-mv elasticsearch-0.20.6 /usr/local/elasticsearch
-rm elasticsearch-0.20.6.tar.gz
+update-alternatives --set java /usr/lib/jvm/java-7-openjdk-i386/jre/bin/java
 
-# Install the service
-mkdir /home/vagrant/repos
-git clone https://github.com/elasticsearch/elasticsearch-servicewrapper.git /home/vagrant/repos/elasticsearch-servicewrapper
-ln -s /home/vagrant/repos/elasticsearch-servicewrapper/service /usr/local/elasticsearch/bin/service
+wget -nv https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.1.deb
+dpkg -i elasticsearch-1.4.1.deb
 
-# Install the ElasticSearch browser
-/usr/local/elasticsearch/bin/plugin -q -install mobz/elasticsearch-head
-/usr/local/elasticsearch/bin/plugin -q -install lukas-vlcek/bigdesk
+mv /etc/elasticsearch/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml.bak
+cp /home/vagrant/config/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
 
-# Start ElasticSearch on boot
-/usr/local/elasticsearch/bin/service/elasticsearch install
+update-rc.d elasticsearch defaults 95 10
+/etc/init.d/elasticsearch start
 
-# Start ElasticSearch now
-/usr/local/elasticsearch/bin/service/elasticsearch start
+/usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head
+/usr/share/elasticsearch/bin/plugin -install lukas-vlcek/bigdesk
+/usr/share/elasticsearch/bin/plugin -install elasticsearch/elasticsearch-analysis-icu/2.4.1
+/usr/share/elasticsearch/bin/plugin -install lmenezes/elasticsearch-kopf
+
+/etc/init.d/elasticsearch restart
+# or service elasticsearch restart
